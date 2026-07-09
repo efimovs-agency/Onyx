@@ -1,11 +1,4 @@
-<?php
-$manifestPath = dirname(__DIR__) . '/public/build/.vite/manifest.json';
-$manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
-
-$stylePath = isset($manifest['src/css/style.css']) ? '/build/' . $manifest['src/css/style.css']['file'] : '/css/style.css';
-$responsivePath = isset($manifest['src/css/responsive.css']) ? '/build/' . $manifest['src/css/responsive.css']['file'] : '/css/responsive.css';
-$scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/js/script.js']['file'] : '/js/script.js';
-?>
+<?php use App\Core\Vite; ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -15,9 +8,11 @@ $scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     
-    <link rel="stylesheet" href="<?= $stylePath ?>">
-    <link rel="stylesheet" href="<?= $responsivePath ?>">
-    <script src="<?= $scriptPath ?>" defer></script>
+    <?= Vite::assets([
+        'src/css/style.css',
+        'src/css/responsive.css',
+        'src/js/script.js'
+    ]) ?>
 
     <style>
         /* Жесткий фикс прыжков макета при появлении скроллбара */
@@ -267,41 +262,6 @@ $scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/
         </div>
     </div>
 </div>
-<script>
-document.getElementById('contactForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); 
-    
-    const btn = this.querySelector('.elite-submit-btn');
-    const originalText = btn.textContent;
-    
-    btn.textContent = 'Отправка...';
-    btn.style.pointerEvents = 'none';
-    btn.style.opacity = '0.7';
 
-    const formData = new FormData(this);
-
-    try {
-        const response = await fetch('/sendMessage', { 
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert('Сообщение успешно отправлено!');
-            this.reset(); 
-        } else {
-            alert('Ошибка: ' + result.message);
-        }
-    } catch (error) {
-        alert('Сбой сети. Проверьте подключение к интернету.');
-    } finally {
-        btn.textContent = originalText;
-        btn.style.pointerEvents = 'all';
-        btn.style.opacity = '1';
-    }
-});
-</script>
 </body>
 </html>
