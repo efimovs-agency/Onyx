@@ -5,16 +5,23 @@
    Enables error reporting to ensure exceptions are caught
    and logged during execution for debugging purposes.
 ========================================================== */
-ini_set('display_errors', 1);
+ini_set('display_errors', 0); // На проде лучше выключать для безопасности
 error_reporting(E_ALL);
 
 /* ==========================================================
-   SESSION MANAGEMENT
-   Initializes the session safely to prevent headers already
-   sent errors and to maintain user state across requests.
+   SESSION MANAGEMENT (OPTIMIZED FOR SERVERLESS)
+   Initializes the session safely and immediately releases
+   the lock for GET requests to prevent Serverless bottlenecks.
 ========================================================== */
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+// [КРИТИЧЕСКИЙ ФИКС ДЛЯ VERCEL]: Разблокировка сессии
+// Снимаем лок файла сессии для всех GET-запросов (кроме логаута).
+// Это убирает мертвую очередь запросов и задержки при переходах по страницам.
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['REQUEST_URI'], '/logout') === false) {
+    session_write_close();
 }
 
 /* ==========================================================
@@ -35,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     
     header('Content-Type: application/json');
     echo json_encode(['status' => 'success']);
+    session_write_close(); // Принудительно сохраняем сессию перед выходом
     exit;
 }
 
@@ -69,8 +77,8 @@ function __($key) {
    Bootstraps the router and primary controller responsible
    for handling core application views and API endpoints.
 ========================================================== */
-// Подключение хелпера Vite
-require_once __DIR__ . '/../app/Core/Vite.php';
+// ВЫРЕЗАНО: Старый класс Vite.php, который вызывал таймауты
+// при поиске несуществующего локального сервера на Vercel.
 
 require_once __DIR__ . '/../app/Router.php';
 require_once __DIR__ . '/../app/Controllers/PageController.php';

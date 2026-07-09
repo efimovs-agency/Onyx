@@ -45,11 +45,16 @@ class User {
         $sql = "INSERT INTO users (email, login, password) VALUES (:email, :login, :password)";
         $stmt = $this->db->prepare($sql);
         
-        return $stmt->execute([
+        if ($stmt->execute([
             ':email' => $email,
             ':login' => $login,
             ':password' => $hashedPassword 
-        ]);
+        ])) {
+            // Возвращаем ID только что созданной записи для моментальной авторизации
+            return $this->db->lastInsertId();
+        }
+        
+        return false;
     }
 
     /* ==========================================================

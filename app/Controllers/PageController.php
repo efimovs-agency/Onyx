@@ -63,13 +63,22 @@ class PageController {
                     if ($userModel->userExists($email, $login)) {
                         $error = __('user_exists') ?? "Пользователь с таким логином или email уже существует.";
                     } else {
-                        if ($userModel->register($email, $login, $password)) {
+                        $newUserId = $userModel->register($email, $login, $password);
+                        
+                        if ($newUserId) {
+                            // Мгновенная авторизация пользователя
+                            $_SESSION['user_id'] = $newUserId;
+                            $_SESSION['login'] = $login;
+                            $_SESSION['theme'] = 'dark'; // Устанавливаем тему по умолчанию
+                            
+                            // Если запрос пришел через JavaScript (Fetch/AJAX)
                             if ($isAjax) {
-                                $sendJson('success', __('reg_success') ?? "Регистрация успешна! Теперь вы можете войти.", '/login');
+                                $sendJson('success', 'Регистрация успешна! Вход...', '/');
                             }
-                            $error = __('reg_success') ?? "Регистрация успешна! Теперь вы можете войти.";
-                            $isSuccess = true;
-                            $activeForm = 'login'; 
+                            
+                            // Если это стандартная отправка формы с перезагрузкой
+                            header("Location: /");
+                            exit();
                         } else {
                             $error = __('reg_error') ?? "Ошибка при регистрации в базе данных.";
                         }
