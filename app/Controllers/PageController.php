@@ -1,5 +1,5 @@
 <?php
-require_once '../app/Models/Link.php';
+require_once(__DIR__ . '/../Models/Link.php');
 require_once '../app/Models/User.php';
 
 /* ==========================================================
