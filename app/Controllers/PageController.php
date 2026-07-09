@@ -289,7 +289,7 @@ class PageController {
                 $sendJson('error', $error);
             }
         }
-        require_once '../views/login.php';
+        require_once(dirname(__DIR__, 2) . '/views/login.php');
     }
 
     public function logout() {
@@ -342,7 +342,7 @@ class PageController {
             header("Location: /login");
             exit();
         }
-        require_once '../views/contact.php';
+        require_once(dirname(__DIR__, 2) . '/views/contact.php');
     }
 
     public function sendMessage() {
