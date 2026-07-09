@@ -116,7 +116,7 @@ class PageController {
             $topSource = !empty($topSourceData) ? $topSourceData[0]['source_name'] : 'Нет данных';
         }
 
-        require_once '../views/home.php';
+        require_once(dirname(__DIR__, 2) . '/views/home.php');
     }
 
     public function links() {
