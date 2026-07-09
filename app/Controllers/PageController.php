@@ -9,6 +9,24 @@ require_once(__DIR__ . '/../Models/User.php');
 ========================================================== */
 class PageController {
     
+    /* ==========================================================
+       CORE UTILITIES
+       Generates a unique short code avoiding database collisions.
+    ========================================================== */
+    private function generateUniqueShortCode($linkModel, $length = 6) {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $maxIndex = strlen($chars) - 1;
+        
+        do {
+            $code = '';
+            for ($i = 0; $i < $length; $i++) {
+                $code .= $chars[random_int(0, $maxIndex)];
+            }
+        } while ($linkModel->shortCodeExists($code));
+        
+        return $code;
+    }
+
     public function index() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'set_theme') {
             $theme = $_POST['theme'] === 'light' ? 'light' : 'dark';
@@ -28,7 +46,6 @@ class PageController {
         $activeForm = 'register'; 
         $isSuccess = false; 
 
-        // Вспомогательная функция для чистой отправки JSON
         $sendJson = function($status, $message, $redirect = null) {
             while (ob_get_level()) { ob_end_clean(); }
             header('Content-Type: application/json; charset=utf-8');
@@ -40,7 +57,6 @@ class PageController {
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
             
-            // Проверяем, пришел ли запрос от JS
             $isAjax = !empty($_POST['ajax']) || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
             
             $email = trim(strval($_POST['email'] ?? $_POST['reg_email'] ?? ''));
@@ -66,17 +82,14 @@ class PageController {
                         $newUserId = $userModel->register($email, $login, $password);
                         
                         if ($newUserId) {
-                            // Мгновенная авторизация пользователя
                             $_SESSION['user_id'] = $newUserId;
                             $_SESSION['login'] = $login;
-                            $_SESSION['theme'] = 'dark'; // Устанавливаем тему по умолчанию
+                            $_SESSION['theme'] = 'dark'; 
                             
-                            // Если запрос пришел через JavaScript (Fetch/AJAX)
                             if ($isAjax) {
                                 $sendJson('success', 'Регистрация успешна! Вход...', '/');
                             }
                             
-                            // Если это стандартная отправка формы с перезагрузкой
                             header("Location: /");
                             exit();
                         } else {
@@ -102,10 +115,20 @@ class PageController {
                     $originalUrl = trim($_POST['original_url'] ?? '');
                     $customCode = trim($_POST['custom_code'] ?? ''); 
 
-                    if (!empty($originalUrl) && !empty($customCode)) {
-                        if (!$linkModel->createShortLink($_SESSION['user_id'], $originalUrl, $customCode, $title)) {
-                            $linkError = "Такое сокращение уже используется в базе";
+                    if (!empty($originalUrl)) {
+                        if (!filter_var($originalUrl, FILTER_VALIDATE_URL)) {
+                            $linkError = "Введите корректный URL-адрес (включая http:// или https://)";
+                        } else {
+                            if (empty($customCode)) {
+                                $customCode = $this->generateUniqueShortCode($linkModel);
+                            }
+
+                            if (!$linkModel->createShortLink($_SESSION['user_id'], $originalUrl, $customCode, $title)) {
+                                $linkError = "Такое кастомное сокращение уже занято, выберите другое";
+                            }
                         }
+                    } else {
+                        $linkError = "Оригинальный URL не может быть пустым";
                     }
                 }
 
@@ -307,11 +330,22 @@ class PageController {
         exit();
     }
 
+    /* ==========================================================
+       REDIRECTION ENGINE
+       Validates short codes, aggregates analytics, and forwards 
+       traffic cleanly without local caching artifacts.
+    ========================================================== */
     public function redirect($shortCode) {
         $linkModel = new Link();
         $linkData = $linkModel->getLinkByCode($shortCode);
 
         if ($linkData) {
+            if (!empty($linkData['expires_at']) && strtotime($linkData['expires_at']) < time()) {
+                http_response_code(410); 
+                echo "Срок действия ссылки истек.";
+                exit;
+            }
+
             $ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
             if (strpos($ipAddress, ',') !== false) {
                 $ipAddress = trim(explode(',', $ipAddress)[0]);
@@ -321,7 +355,10 @@ class PageController {
             $referer = $_SERVER['HTTP_REFERER'] ?? null;
 
             $linkModel->logClick($linkData['id'], $ipAddress, $userAgent, $referer);
-            header("Location: " . $linkData['original_url']);
+            
+            header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+            header("Pragma: no-cache");
+            header("Location: " . $linkData['original_url'], true, 302);
             exit();
         } else {
             http_response_code(404);
