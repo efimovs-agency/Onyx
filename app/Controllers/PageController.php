@@ -1,4 +1,10 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Обязательная загрузка классов Composer для PHPMailer
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+
 require_once(__DIR__ . '/../Models/Link.php');
 require_once(__DIR__ . '/../Models/User.php');
 
@@ -121,10 +127,17 @@ class PageController {
                         } else {
                             if (empty($customCode)) {
                                 $customCode = $this->generateUniqueShortCode($linkModel);
+                            } else {
+                                if (!preg_match('/^[a-zA-Z0-9\-_]+$/', $customCode)) {
+                                    $linkError = "Кастомный код может содержать только английские буквы, цифры, тире и подчеркивания";
+                                    $customCode = null; 
+                                }
                             }
 
-                            if (!$linkModel->createShortLink($_SESSION['user_id'], $originalUrl, $customCode, $title)) {
-                                $linkError = "Такое кастомное сокращение уже занято, выберите другое";
+                            if ($customCode !== null) {
+                                if (!$linkModel->createShortLink($_SESSION['user_id'], $originalUrl, $customCode, $title)) {
+                                    $linkError = "Такое кастомное сокращение уже занято, выберите другое";
+                                }
                             }
                         }
                     } else {
@@ -391,9 +404,71 @@ class PageController {
         require_once(dirname(__DIR__, 2) . '/views/contact.php');
     }
 
+    /* ==========================================================
+       MAILER ENGINE
+       Processes contact form submissions using PHPMailer and 
+       Vercel Environment Variables for strict security.
+    ========================================================== */
     public function sendMessage() {
         header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Функция отправки временно отключена']);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Неверный метод запроса']);
+            exit;
+        }
+
+        $name = htmlspecialchars(trim($_POST['name'] ?? ''));
+        $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $message = htmlspecialchars(trim($_POST['message'] ?? ''));
+
+        if (empty($name) || empty($email) || empty($message)) {
+            echo json_encode(['success' => false, 'message' => 'Пожалуйста, заполните все поля']);
+            exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'message' => 'Некорректный email адрес']);
+            exit;
+        }
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host       = getenv('SMTP_HOST'); 
+            $mail->SMTPAuth   = true;
+            $mail->Username   = getenv('SMTP_USER'); 
+            $mail->Password   = getenv('SMTP_PASS'); 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = getenv('SMTP_PORT') ?: 587;
+            $mail->CharSet    = 'UTF-8';
+
+            $mail->setFrom(getenv('SMTP_USER'), 'Onyx System'); 
+            $mail->addAddress(getenv('SUPPORT_EMAIL') ?: getenv('SMTP_USER')); 
+            $mail->addReplyTo($email, $name); 
+
+            $mail->isHTML(true);
+            $mail->Subject = "Новый запрос в поддержку Onyx от: " . $name;
+            
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;'>
+                    <h2 style='color: #030303; border-bottom: 2px solid #e5c158; padding-bottom: 10px;'>Новое обращение — Onyx Support</h2>
+                    <p><strong>От кого:</strong> {$name}</p>
+                    <p><strong>Email для связи:</strong> <a href='mailto:{$email}'>{$email}</a></p>
+                    <div style='background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 20px;'>
+                        <p style='margin-top:0; color: #555;'><strong>Текст сообщения:</strong></p>
+                        <p style='white-space: pre-wrap; color: #333;'>{$message}</p>
+                    </div>
+                </div>
+            ";
+
+            $mail->send();
+            echo json_encode(['success' => true, 'message' => 'Ваше сообщение успешно отправлено!']);
+            
+        } catch (Exception $e) {
+            error_log("Onyx Mailer Error: {$mail->ErrorInfo}");
+            echo json_encode(['success' => false, 'message' => 'Системная ошибка сервера почты. Попробуйте позже.']);
+        }
         exit;
     }
 
