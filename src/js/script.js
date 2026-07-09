@@ -610,58 +610,72 @@ document.addEventListener('DOMContentLoaded', () => {
    Handles interactive data manipulation for individual links, including
    clipboard duplication, record editing, and configuration extraction.
    ========================================================================== */
+/* ==========================================================================
+   LINK MANAGEMENT LOGIC
+   Handles interactive data manipulation for individual links, including
+   clipboard duplication, record editing, and configuration extraction.
+   ========================================================================== */
 window.copyToClipboard = function(text) {
     navigator.clipboard.writeText(text).then(() => { 
-        alert(window.t('copied_to_clipboard', 'Скопировано в буфер: ') + text); 
+        
+        // Удаляем предыдущее уведомление, если пользователь кликает несколько раз подряд
+        const existingToast = document.getElementById('onyx-copy-toast');
+        if (existingToast) existingToast.remove();
+
+        const isLight = document.body.classList.contains('light-theme');
+        const toast = document.createElement('div');
+        toast.id = 'onyx-copy-toast';
+
+        // Премиальные стили (Glassmorphism + Apple UI)
+        toast.style.position = 'fixed';
+        toast.style.bottom = '40px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translate(-50%, 50px)';
+        toast.style.opacity = '0';
+        toast.style.background = isLight ? 'rgba(255, 255, 255, 0.75)' : 'rgba(28, 28, 30, 0.75)';
+        toast.style.backdropFilter = 'blur(16px)';
+        toast.style.webkitBackdropFilter = 'blur(16px)';
+        toast.style.border = isLight ? '1px solid rgba(0, 0, 0, 0.08)' : '1px solid rgba(255, 255, 255, 0.08)';
+        toast.style.color = isLight ? '#1c1c1e' : '#f5f5f7';
+        toast.style.padding = '14px 24px';
+        toast.style.borderRadius = '100px';
+        toast.style.fontFamily = 'Montserrat, sans-serif';
+        toast.style.fontSize = '14px';
+        toast.style.fontWeight = '500';
+        toast.style.boxShadow = isLight ? '0 10px 30px rgba(0, 0, 0, 0.1)' : '0 10px 30px rgba(0, 0, 0, 0.4)';
+        toast.style.zIndex = '9999';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '10px';
+        toast.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        // Иконка успешного действия (Зеленая галочка)
+        const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#32d74b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+        // Формируем контент без вывода самой ссылки
+        const message = window.t('copied_success', 'Ссылка скопирована в буфер обмена.');
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+
+        document.body.appendChild(toast);
+
+        // Принудительный рефлоу для запуска CSS-анимации
+        void toast.offsetWidth;
+
+        // Анимация появления
+        toast.style.transform = 'translate(-50%, 0)';
+        toast.style.opacity = '1';
+
+        // Анимация исчезновения и удаление из DOM через 2.5 секунды
+        setTimeout(() => {
+            toast.style.transform = 'translate(-50%, 20px)';
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 400); // Ожидание завершения transition
+        }, 2500);
+        
     });
 };
-
-window.openEditModal = function(id, title, url) {
-    const editModal = document.getElementById('editModal');
-    if (editModal) {
-        document.getElementById('editLinkId').value = id;
-        document.getElementById('editTitle').value = title;
-        document.getElementById('editOriginalUrl').value = url;
-        editModal.classList.add('active');
-    }
-};
-
-window.closeEditModal = function() {
-    const editModal = document.getElementById('editModal');
-    if (editModal) editModal.classList.remove('active');
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', () => { 
-            window.location.href = '/api/export'; 
-        });
-    }
-
-    const editForm = document.querySelector('#editModal form');
-    if (editForm) {
-        const urlInput = document.getElementById('editOriginalUrl');
-        
-        editForm.addEventListener('submit', (e) => {
-            const urlValue = urlInput.value.trim();
-            if (!urlValue) {
-                e.preventDefault(); 
-                urlInput.classList.add('input-error');
-                shakeElement(urlInput);
-                return;
-            } else {
-                if (!urlValue.startsWith('http://') && !urlValue.startsWith('https://')) {
-                    urlInput.value = 'https://' + urlValue;
-                }
-            }
-        });
-
-        urlInput.addEventListener('input', function() {
-            this.classList.remove('input-error');
-        });
-    }
-});
 
 /* ==========================================================================
    LINK FILTERING AND SORTING

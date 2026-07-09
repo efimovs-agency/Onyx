@@ -273,12 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Блокируем перезагрузку страницы!
+            e.preventDefault(); 
 
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerText;
             
-            // Меняем текст кнопки на время отправки
+            
             submitBtn.innerText = 'Отправка...';
             submitBtn.disabled = true;
 
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Успешно: ' + data.message); // Замени на красивый toast, если есть
+                    alert('Успешно: ' + data.message); 
                     contactForm.reset();
                 } else {
                     alert('Ошибка: ' + data.message);
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Произошла системная ошибка при отправке.');
             })
             .finally(() => {
-                // Возвращаем кнопку в исходное состояние
+                
                 submitBtn.innerText = originalBtnText;
                 submitBtn.disabled = false;
             });
