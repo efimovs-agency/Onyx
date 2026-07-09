@@ -2,17 +2,18 @@
 
 /* ==========================================================
    DATABASE CONNECTION MANAGER
-   Singleton implementation for PostgreSQL database access 
-   using PDO. Ensures a single active connection instance 
+   Singleton implementation for PostgreSQL database access
+   using PDO. Ensures a single active connection instance
    is maintained and reused across the application lifecycle.
 ========================================================== */
-class Database {
-    
+
+class Database
+{
     /**
-     * @var Database|null Singleton instance of the class.
+     * @var Database|null Singleton instance.
      */
     private static $instance = null;
-    
+
     /**
      * @var PDO Active database connection.
      */
@@ -20,57 +21,85 @@ class Database {
 
     /* ==========================================================
        CONNECTION CONFIGURATION
-       Credentials and routing parameters for the PostgreSQL host.
     ========================================================== */
-    // БОЕВЫЕ НАСТРОЙКИ SUPABASE (FRANKFURT)
-    private $host = 'aws-0-eu-central-1.pooler.supabase.com'; 
+
+    // Supabase (Frankfurt)
+    private $host = 'aws-0-eu-central-1.pooler.supabase.com';
     private $port = '6543';
     private $db   = 'postgres';
     private $user = 'postgres.fpudeughixppplvvpqrb';
-    private $pass = getenv('DB_PASSWORD');
+
+    /**
+     * @var string Database password.
+     */
+    private $pass;
 
     /* ==========================================================
        INITIALIZATION
-       Private constructor prevents direct instantiation. 
-       Establishes the PDO connection, configures strict error 
-       reporting, and sets the default fetch mode. Halts execution 
-       with a formatted UI fallback upon connection failure.
     ========================================================== */
-    private function __construct() {
+
+    private function __construct()
+    {
+        // Получаем пароль из переменной окружения Vercel
+        $this->pass = getenv('DB_PASSWORD');
+
+        // Если переменная не найдена — выводим понятную ошибку
+        if (!$this->pass) {
+            die("
+                <div style='background:#1a1010;color:#ff3b30;padding:20px;
+                font-family:sans-serif;border-radius:10px;'>
+                    <b>Ошибка:</b><br>
+                    Переменная окружения <b>DB_PASSWORD</b> не найдена.
+                </div>
+            ");
+        }
+
         try {
-            // Добавлен sslmode=require — обязательное требование Supabase для облака
+
             $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db};sslmode=require";
-            
-            $this->conn = new PDO($dsn, $this->user, $this->pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]);
-            
+
+            $this->conn = new PDO(
+                $dsn,
+                $this->user,
+                $this->pass,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]
+            );
+
         } catch (PDOException $e) {
-            die("<div style='background:#1a1010; color:#ff3b30; padding:20px; font-family:sans-serif; border-radius:10px;'>
-                    <b>Сбой подключения к БД:</b><br>" . $e->getMessage() . "
-                 </div>");
+
+            die("
+                <div style='background:#1a1010;color:#ff3b30;padding:20px;
+                font-family:sans-serif;border-radius:10px;'>
+                    <b>Сбой подключения к БД:</b><br>
+                    {$e->getMessage()}
+                </div>
+            ");
+
         }
     }
 
     /* ==========================================================
        INSTANCE RETRIEVAL
-       Provides global access point to the Singleton instance, 
-       instantiating the connection only on the initial request.
     ========================================================== */
-    public static function getInstance() {
-        if (!self::$instance) {
+
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
             self::$instance = new Database();
         }
-        
+
         return self::$instance;
     }
 
     /* ==========================================================
        CONNECTION ACCESS
-       Returns the active PDO resource for executing queries.
     ========================================================== */
-    public function getConnection() {
+
+    public function getConnection()
+    {
         return $this->conn;
     }
 }
