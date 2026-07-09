@@ -161,7 +161,7 @@ class PageController {
         }
 
         $userLinks = $linkModel->getUserLinks($_SESSION['user_id']);
-        require_once '../views/links.php';
+        require_once(dirname(__DIR__, 2) . '/views/links.php');
     }
 
     public function analytics() {
@@ -228,7 +228,7 @@ class PageController {
                 }
             }
 
-            require_once '../views/analytics.php';
+            require_once(dirname(__DIR__, 2) . '/views/analytics.php');
             
         } catch (\Throwable $e) {
             die("<div style='background:#1a1010; color:#ff3b30; padding:30px; font-family:sans-serif; border-radius:12px; margin: 40px auto; max-width: 800px; border: 1px solid rgba(255,59,48,0.3);'>
