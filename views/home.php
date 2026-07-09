@@ -1,4 +1,11 @@
+<?php
+$manifestPath = dirname(__DIR__) . '/public/build/.vite/manifest.json';
+$manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
 
+$stylePath = isset($manifest['src/css/style.css']) ? '/build/' . $manifest['src/css/style.css']['file'] : '/css/style.css';
+$responsivePath = isset($manifest['src/css/responsive.css']) ? '/build/' . $manifest['src/css/responsive.css']['file'] : '/css/responsive.css';
+$scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/js/script.js']['file'] : '/js/script.js';
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -342,11 +349,3 @@ if (isset($_SESSION['theme']) && $_SESSION['theme'] === 'light') {
 <?php endif; ?>
 </body>
 </html>
-<?php
-$manifestPath = dirname(__DIR__) . '/public/build/.vite/manifest.json';
-$manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
-
-$stylePath = isset($manifest['src/css/style.css']) ? '/build/' . $manifest['src/css/style.css']['file'] : '/css/style.css';
-$responsivePath = isset($manifest['src/css/responsive.css']) ? '/build/' . $manifest['src/css/responsive.css']['file'] : '/css/responsive.css';
-$scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/js/script.js']['file'] : '/js/script.js';
-?>
