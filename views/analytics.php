@@ -7,11 +7,9 @@
     
     <title>Onyx | <?= __('enterprise_analytics') ?? 'Enterprise Analytics' ?></title>
     
-    <?= Vite::assets([
-        'src/css/style.css',
-        'src/css/responsive.css',
-        'src/js/script.js'
-    ]) ?>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <script src="/js/script.js" defer></script>
     
     
     <style>
