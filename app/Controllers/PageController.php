@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../Models/Link.php');
-require_once '../app/Models/User.php';
+require_once(__DIR__ . '/../Models/User.php');
 
 /* ==========================================================
    PAGE CONTROLLER
