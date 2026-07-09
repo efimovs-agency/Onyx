@@ -1,6 +1,10 @@
 {
   "builds": [
     {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    },
+    {
       "src": "public/index.php",
       "use": "vercel-php@0.6.0"
     }
