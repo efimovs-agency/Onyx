@@ -267,6 +267,48 @@ $scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Блокируем перезагрузку страницы!
 
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            
+            // Меняем текст кнопки на время отправки
+            submitBtn.innerText = 'Отправка...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(contactForm);
+
+            fetch('/api/contact', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Успешно: ' + data.message); // Замени на красивый toast, если есть
+                    contactForm.reset();
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла системная ошибка при отправке.');
+            })
+            .finally(() => {
+                // Возвращаем кнопку в исходное состояние
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});
+</script>
 </body>
 </html>
