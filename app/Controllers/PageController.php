@@ -356,7 +356,32 @@ class PageController {
 
     public function sendMessage() {
         header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Функция отправки временно отключена']);
+        
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $messageText = trim($_POST['message'] ?? '');
+        
+        if (empty($name) || empty($email) || empty($messageText)) {
+            echo json_encode(['success' => false, 'message' => 'Пожалуйста, заполните все поля.']);
+            exit;
+        }
+
+        $to = "workartur067@gmail.com"; 
+        $subject = "Onyx Support: Новый запрос от " . $name;
+        
+        $message = "Имя: $name\n";
+        $message .= "Email: $email\n\n";
+        $message .= "Сообщение:\n$messageText";
+
+        $headers = "From: support@onyx.com\r\n";
+        $headers .= "Reply-To: $email\r\n";
+        $headers .= "Content-Type: text/plain; charset=UTF-8";
+
+        if (@mail($to, $subject, $message, $headers)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Ошибка отправки сервером.']);
+        }
         exit;
     }
 

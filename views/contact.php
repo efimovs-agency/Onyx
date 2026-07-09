@@ -267,6 +267,41 @@ $scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/
         </div>
     </div>
 </div>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault(); 
+    
+    const btn = this.querySelector('.elite-submit-btn');
+    const originalText = btn.textContent;
+    
+    btn.textContent = 'Отправка...';
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.7';
 
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch('/sendMessage', { 
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Сообщение успешно отправлено!');
+            this.reset(); 
+        } else {
+            alert('Ошибка: ' + result.message);
+        }
+    } catch (error) {
+        alert('Сбой сети. Проверьте подключение к интернету.');
+    } finally {
+        btn.textContent = originalText;
+        btn.style.pointerEvents = 'all';
+        btn.style.opacity = '1';
+    }
+});
+</script>
 </body>
 </html>
