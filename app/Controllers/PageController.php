@@ -366,21 +366,35 @@ class PageController {
             exit;
         }
 
-        $to = "workartur067@gmail.com"; 
-        $subject = "Onyx Support: Новый запрос от " . $name;
-        
-        $message = "Имя: $name\n";
-        $message .= "Email: $email\n\n";
-        $message .= "Сообщение:\n$messageText";
+        // Подключаем автозагрузчик Composer
+        require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-        $headers = "From: support@onyx.com\r\n";
-        $headers .= "Reply-To: $email\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8";
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
-        if (@mail($to, $subject, $message, $headers)) {
+        try {
+            // Настройки SMTP сервера Gmail
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'workartur067@gmail.com'; // Твой Gmail
+            $mail->Password   = 'ТВОЙ_ПАРОЛЬ_ПРИЛОЖЕНИЯ'; // Сюда вставь 16-значный пароль приложения
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // От кого и кому
+            $mail->setFrom('workartur067@gmail.com', 'Onyx System'); // Gmail требует, чтобы отправитель совпадал с аккаунтом
+            $mail->addAddress('workartur067@gmail.com'); // Куда отправлять заявку
+            $mail->addReplyTo($email, $name); // Чтобы по кнопке "Ответить" письмо шло клиенту
+
+            // Контент письма
+            $mail->isHTML(false);
+            $mail->Subject = "Onyx Support: Новый запрос от " . $name;
+            $mail->Body    = "Имя: $name\nEmail: $email\n\nСообщение:\n$messageText";
+
+            $mail->send();
             echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Ошибка отправки сервером.']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Ошибка почтового сервера: ' . $mail->ErrorInfo]);
         }
         exit;
     }
