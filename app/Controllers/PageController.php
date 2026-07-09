@@ -356,46 +356,7 @@ class PageController {
 
     public function sendMessage() {
         header('Content-Type: application/json');
-        
-        $name = trim($_POST['name'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $messageText = trim($_POST['message'] ?? '');
-        
-        if (empty($name) || empty($email) || empty($messageText)) {
-            echo json_encode(['success' => false, 'message' => 'Пожалуйста, заполните все поля.']);
-            exit;
-        }
-
-        // Подключаем автозагрузчик Composer
-        require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
-
-        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-
-        try {
-            // Настройки SMTP сервера Gmail
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'workartur067@gmail.com'; // Твой Gmail
-            $mail->Password   = 'ТВОЙ_ПАРОЛЬ_ПРИЛОЖЕНИЯ'; // Сюда вставь 16-значный пароль приложения
-            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
-
-            // От кого и кому
-            $mail->setFrom('workartur067@gmail.com', 'Onyx System'); // Gmail требует, чтобы отправитель совпадал с аккаунтом
-            $mail->addAddress('workartur067@gmail.com'); // Куда отправлять заявку
-            $mail->addReplyTo($email, $name); // Чтобы по кнопке "Ответить" письмо шло клиенту
-
-            // Контент письма
-            $mail->isHTML(false);
-            $mail->Subject = "Onyx Support: Новый запрос от " . $name;
-            $mail->Body    = "Имя: $name\nEmail: $email\n\nСообщение:\n$messageText";
-
-            $mail->send();
-            echo json_encode(['success' => true]);
-        } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Ошибка почтового сервера: ' . $mail->ErrorInfo]);
-        }
+        echo json_encode(['success' => false, 'message' => 'Функция отправки временно отключена']);
         exit;
     }
 
