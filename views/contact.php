@@ -8,9 +8,11 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/responsive.css">
-    <script src="/js/script.js" defer></script>
+    <?= Vite::assets([
+        'src/css/style.css',
+        'src/css/responsive.css',
+        'src/js/script.js'
+    ]) ?>
 
     <style>
         /* Жесткий фикс прыжков макета при появлении скроллбара */
