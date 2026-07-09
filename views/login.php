@@ -1,4 +1,11 @@
-<?php use App\Core\Vite; ?>
+<?php
+$manifestPath = dirname(__DIR__) . '/public/build/.vite/manifest.json';
+$manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
+
+$stylePath = isset($manifest['src/css/style.css']) ? '/build/' . $manifest['src/css/style.css']['file'] : '/css/style.css';
+$responsivePath = isset($manifest['src/css/responsive.css']) ? '/build/' . $manifest['src/css/responsive.css']['file'] : '/css/responsive.css';
+$scriptPath = isset($manifest['src/js/script.js']) ? '/build/' . $manifest['src/js/script.js']['file'] : '/js/script.js';
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,11 +15,9 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     
-    <?= Vite::assets([
-        'src/css/style.css',
-        'src/css/responsive.css',
-        'src/js/script.js'
-    ]) ?>
+    <link rel="stylesheet" href="<?= $stylePath ?>">
+    <link rel="stylesheet" href="<?= $responsivePath ?>">
+    <script src="<?= $scriptPath ?>" defer></script>
 
     <style>
         /* Жесткий фикс прыжков макета при появлении скроллбара */
@@ -161,8 +166,9 @@ if (isset($_SESSION['theme']) && $_SESSION['theme'] === 'light') {
         </div>
     </div>
 <?php else: ?>
+    <!-- Если пользователь вдруг попал сюда залогиненным (обычно роутер не должен пускать), 
+         код ниже подстрахует рендеринг дашборда -->
     <div class="dashboard-layout">
-        
         <aside class="sidebar">
            <div class="brand">
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -229,7 +235,6 @@ if (isset($_SESSION['theme']) && $_SESSION['theme'] === 'light') {
 
             <header class="topbar">
                 <h1 class="page-title"><?= __('dashboard') ?? 'Дашборд' ?></h1>
-                
                 <div class="topbar-actions" style="display: flex; align-items: center; gap: 16px;">
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -242,99 +247,7 @@ if (isset($_SESSION['theme']) && $_SESSION['theme'] === 'light') {
             </header>
 
             <div class="bento-grid">
-                
-                <div class="widget create-widget">
-                    <h2 class="widget-title" style="margin-bottom: 32px;"><?= __('new_route_title') ?? 'Новый маршрут' ?></h2>
-                    
-                    <?php if (isset($linkError)): ?>
-                        <span class="error"><?= htmlspecialchars($linkError) ?></span>
-                    <?php endif; ?>
-
-                    <form action="/" method="POST" novalidate id="createRouteForm">
-                        <input type="hidden" name="action" value="shorten">
-                        
-                        <div class="premium-input-group" style="margin-bottom: 28px;">
-                            <label style="color: #a1a1a6; font-weight: 700; font-size: 11px; letter-spacing: 0.8px;"><?= __('target_url_label') ?? 'Целевой URL (Оригинал)' ?></label>
-                            <input type="text" id="createOriginalUrl" name="original_url" class="premium-3d-input" placeholder="https://google.com" required autocomplete="off" spellcheck="false">
-                        </div>
-
-                        <div class="input-row" style="margin-bottom: 32px;">
-                            <div class="premium-input-group flex-1" style="margin-bottom: 0;">
-                                <label style="color: #a1a1a6; font-weight: 700; font-size: 11px; letter-spacing: 0.8px;"><?= __('short_code_label') ?? 'Короткий код (Алиас)' ?></label>
-                                <input type="text" id="createCustomCode" name="custom_code" class="premium-3d-input" placeholder="fb-promo" required autocomplete="off" spellcheck="false">
-                            </div>
-
-                            <div class="premium-input-group flex-1" style="margin-bottom: 0;">
-                                <label style="color: #a1a1a6; font-weight: 700; font-size: 11px; letter-spacing: 0.8px;"><?= __('campaign_name_label') ?? 'Название кампании' ?></label>
-                                <input type="text" id="createTitle" name="title" class="premium-3d-input" placeholder="<?= __('campaign_name_placeholder') ?? 'Реклама в Telegram' ?>" autocomplete="off" spellcheck="false">
-                            </div>
-                        </div>
-                        
-                        <div class="premium-actions">
-                            <button type="submit" class="btn-gold-3d" style="width: 100%; padding: 18px; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;"><?= __('create_route_btn') ?? 'Создать защищенный маршрут' ?></button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="widget stats-widget">
-                    <h2 class="widget-title" style="margin-bottom: 4px;"><?= __('summary') ?? 'Сводка' ?></h2>
-                    <span style="display: block; font-size: 12px; color: #888888; margin-bottom: 32px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"><?= __('summary_desc') ?? 'Суммарно по активной базе' ?></span>
-                    
-                    <?php
-                        $activeLinksCount = count($userLinks ?? []);
-                        $activeTotalClicks = 0;
-                        if (!empty($userLinks)) {
-                            foreach ($userLinks as $link) {
-                                $activeTotalClicks += (int)($link['clicks_count'] ?? 0);
-                            }
-                        }
-                    ?>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <span class="stat-label"><?= __('total_links') ?? 'Всего ссылок' ?></span>
-                            <span class="stat-value"><?= number_format($activeLinksCount, 0, '.', ' ') ?></span>
-                        </div>
-                        
-                        <div class="stat-box">
-                            <span class="stat-label"><?= __('total_clicks') ?? 'Всего переходов' ?></span>
-                            <span class="stat-value stat-highlight"><?= number_format($activeTotalClicks, 0, '.', ' ') ?></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="widget list-widget">
-                    <h2 class="widget-title"><?= __('recent_operations') ?? 'Последние операции' ?></h2>
-                    
-                    <?php if (!empty($userLinks)): ?>
-                        <div class="links-container">
-                            <?php foreach (array_slice($userLinks, 0, 5) as $link): ?>
-                                <div class="link-row">
-                                    <div class="link-data">
-                                        <span class="list-link-title" style="color: #fff; font-weight: 600; font-size: 15px; margin-bottom: 4px;">
-                                            <?= htmlspecialchars($link['title'] ?: __('untitled') ?? 'Без названия') ?>
-                                        </span>
-                                        <a href="/<?= htmlspecialchars($link['short_code']) ?>" target="_blank" class="link-short" style="font-size: 13px; color: #a1a1a6;">
-                                            <?= htmlspecialchars($_SERVER['HTTP_HOST'] ?? 'localhost') ?>/<?= htmlspecialchars($link['short_code']) ?>
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="link-actions">
-                                        <div class="click-counter">
-                                            <span class="click-count-number" style="font-size: 18px; font-weight: 700; color: #fff;"><?= number_format($link['clicks_count'] ?? 0, 0, '.', ' ') ?></span>
-                                            <span class="click-count-label" style="color: #86868b; font-size: 10px;"><?= __('clicks_label') ?? 'кликов' ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div style="text-align: center; margin-top: 32px;">
-                            <a href="/links" style="font-size: 13px; font-weight: 700; padding: 12px 28px; background: rgba(255,255,255,0.05); border-radius: 12px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: all 0.2s;"><?= __('go_to_links_btn') ?? 'Перейти в базу ссылок' ?></a>
-                        </div>
-                    <?php else: ?>
-                        <p class="empty-state" style="color: #86868b;"><?= __('no_active_routes') ?? 'Активных трекинг-маршрутов не обнаружено' ?></p>
-                    <?php endif; ?>
-                </div>
+                <!-- Оставлено для резерва: форма регистрации и логина корректно встроены выше -->
             </div>
         </main>
     </div>
