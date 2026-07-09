@@ -1,0 +1,811 @@
+/* ==========================================================================
+   ONYX RESPONSIVE DESIGN (APPLE-STYLE / GEMINI ADAPTATION)
+   ========================================================================== */
+
+/* =========================================
+   0. ЖЕЛЕЗОБЕТОННОЕ СКРЫТИЕ МОБИЛЬНЫХ ЭЛЕМЕНТОВ НА ПК
+   ========================================= */
+.mobile-close-btn { display: none !important; }
+@media (min-width: 769px) {
+    .mobile-menu-btn, .mobile-sidebar-overlay { display: none !important; }
+}
+
+/* =========================================
+   1. TABLET & SMALL LAPTOPS (max-width: 1024px)
+   ========================================= */
+@media (max-width: 1024px) {
+    .dashboard-layout { padding-left: 240px; }
+    .sidebar { width: 240px; padding: 24px 16px; }
+    .main-content { padding: 32px 24px; }
+    .bento-grid { grid-template-columns: 1fr; gap: 24px; }
+    .create-widget, .stats-widget, .list-widget { grid-column: 1 / -1; }
+    .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+    .bento-grid-enterprise { grid-template-columns: repeat(2, 1fr); }
+    .elite-contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .elite-card { padding: 40px; }
+    
+    /* ФИКС СЖАТИЯ ПОИСКА НА ПЛАНШЕТАХ */
+    .links-toolbar { flex-wrap: wrap !important; }
+    .search-wrapper-3d { min-width: 200px !important; flex: 1 1 auto !important; }
+
+    /* ФИКС ОВЕРФЛОУ ШАПКИ АНАЛИТИКИ НА ПЛАНШЕТАХ */
+    .analytics-topbar { flex-wrap: wrap !important; gap: 20px !important; }
+    .analytics-actions { flex-wrap: wrap !important; justify-content: flex-start !important; }
+}
+
+/* =========================================
+   2. MOBILE DEVICES (max-width: 768px)
+   ========================================= */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box !important;
+    }
+
+    .dashboard-layout { padding-left: 0; padding-top: 0; width: 100% !important; }
+    .main-content { padding: 20px 16px; width: 100% !important; max-width: 100vw !important; }
+
+    /* КНОПКА ОТКРЫТИЯ МЕНЮ */
+    .mobile-menu-btn {
+        width: 40px !important; height: 40px !important;
+        background: rgba(255, 255, 255, 0.08) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important;
+        cursor: pointer !important; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; padding: 0 !important; z-index: 999;
+        color: #ffffff !important; 
+    }
+    .mobile-menu-btn:active { transform: scale(0.92) !important; background: rgba(255, 255, 255, 0.15) !important; }
+    .mobile-menu-btn svg { width: 20px !important; height: 20px !important; stroke-width: 2.5 !important; }
+    .mobile-menu-btn svg, .mobile-menu-btn svg line, .mobile-menu-btn svg path { stroke: #ffffff !important; color: #ffffff !important; }
+
+    body.light-theme .mobile-menu-btn { background: rgba(255, 255, 255, 0.8) !important; border-color: rgba(0, 0, 0, 0.1) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important; }
+    body.light-theme .mobile-menu-btn svg, body.light-theme .mobile-menu-btn svg line, body.light-theme .mobile-menu-btn svg path { stroke: #1d1d1f !important; color: #1d1d1f !important; }
+
+    /* ОВЕРЛЕЙ И САЙДБАР */
+    .mobile-sidebar-overlay { 
+        display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.4s ease;
+    }
+    .mobile-sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+    .sidebar {
+        position: fixed; top: 0; right: 0; left: auto; width: 280px; height: 100dvh;
+        transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 9999; border-left: 1px solid rgba(255, 255, 255, 0.05) !important; border-right: none !important;
+        background: rgba(10, 10, 12, 0.95); padding: 32px 20px;
+    }
+    body.light-theme .sidebar { background: rgba(245, 245, 247, 0.98) !important; border-left: 1px solid rgba(0, 0, 0, 0.05) !important; }
+    .sidebar.open { transform: translateX(0); box-shadow: -10px 0 40px rgba(0,0,0,0.5); }
+    body.light-theme .sidebar.open { box-shadow: -10px 0 40px rgba(0,0,0,0.1); }
+
+    /* ШАПКА САЙДБАРА */
+    .sidebar .brand { display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; margin-bottom: 40px !important; }
+    .mobile-close-btn {
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        width: 36px !important; height: 36px !important; background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 10px !important;
+        color: #86868b !important; cursor: pointer !important; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important; padding: 0 !important;
+    }
+    .mobile-close-btn:active { transform: scale(0.9) !important; background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; }
+    .mobile-close-btn svg { width: 18px !important; height: 18px !important; stroke-width: 2 !important; }
+    body.light-theme .mobile-close-btn { background: rgba(0, 0, 0, 0.04) !important; border-color: rgba(0, 0, 0, 0.08) !important; color: #86868b !important; }
+    body.light-theme .mobile-close-btn:active { background: rgba(0, 0, 0, 0.08) !important; color: #1d1d1f !important; }
+
+    /* ВНУТРЕННОСТИ САЙДБАРА */
+    .nav-group-title { display: block; }
+    .nav-item { flex-direction: row; justify-content: flex-start; text-align: left; font-size: 15px !important; padding: 12px 16px; }
+    .nav-icon { width: 18px; height: 18px; margin: 0; }
+    .btn-sidebar-logout { position: relative; right: auto; top: auto; width: 100% !important; margin-bottom: 24px !important; }
+    .sidebar-footer { display: flex; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+    .user-info { display: flex; }
+
+    /* ГЛОБАЛЬНАЯ ЗАЩИТА ОСНОВНЫХ СЕТОК */
+    .bento-grid, .bento-grid-enterprise, .analytics-grid, .links-3d-grid, .elite-contact-grid { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        gap: 20px !important; 
+        width: 100% !important; 
+        box-sizing: border-box !important;
+    }
+
+    /* КАРТОЧКИ И КОНТЕНТ */
+    .widget, .elite-card, .create-widget, .stats-widget, .list-widget, .link-3d-card { 
+        padding: 20px 16px !important; 
+        border-radius: 20px !important; 
+        width: 100% !important; 
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important; /* Разрешаем выпадающим спискам выходить за края */
+    }
+    
+    .auth-card { padding: 32px 24px !important; border-radius: 24px !important; width: 100% !important; }
+    .page-title { font-size: 24px; margin-bottom: 20px; }
+    .widget-title { font-size: 20px; margin-bottom: 16px; }
+    
+    .input-row { flex-direction: column; gap: 16px; margin-bottom: 16px; width: 100% !important; }
+    .premium-actions { flex-direction: column; gap: 12px; margin-top: 24px; width: 100% !important; }
+
+    /* МОДАЛЬНЫЕ ОКНА И ФИКС АНТИ-ОБРЕЗКИ ДРОПДАУНОВ */
+    .modal-box, .premium-3d-modal { 
+        padding: 32px 20px !important; width: 95% !important; max-width: 100% !important; box-sizing: border-box !important; 
+        overflow: visible !important; overflow-y: visible !important; overflow-x: visible !important; max-height: none !important;
+    }
+    .settings-modal { 
+        width: 95% !important; max-width: 100% !important; height: auto !important; border-radius: 20px !important; 
+        overflow: visible !important; overflow-y: visible !important; overflow-x: visible !important; max-height: none !important;
+    }
+    
+    /* Снимаем обрезку со всех вложенных контейнеров внутри настроек */
+    .settings-body, .settings-group, .settings-list, .settings-item {
+        overflow: visible !important; overflow-y: visible !important;
+    }
+
+    /* Переносим скролл на сам темный фон (оверлей) */
+    #settingsModalWrapper, .modal-overlay {
+        overflow-y: auto !important;
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+    }
+}
+
+/* =========================================
+   3. СТАНДАРТНЫЕ СМАРТФОНЫ (max-width: 480px)
+   ========================================= */
+@media (max-width: 480px) {
+
+    /* ДАШБОРД: ЗАЩИТА ИНПУТОВ И КНОПОК */
+    .widget input, .widget select, .widget textarea, .widget button,
+    .create-widget input, .create-widget select, .create-widget textarea, .create-widget button,
+    .auth-card input, .auth-card button, .input-group input {
+        width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;
+    }
+
+    .widget button[type="submit"], .create-widget button, .btn-primary, .btn-gold-3d, .btn-danger-3d, .elite-submit-btn, .btn-submit-3d {
+        width: 100% !important; flex: none !important;
+        white-space: normal !important; height: auto !important; min-height: 48px !important; line-height: 1.3 !important; padding: 12px 16px !important;
+    }
+
+    /* ДАШБОРД: СЕТКА СТАТИСТИКИ (Сводка) */
+    .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 12px !important; 
+        width: 100% !important;
+    }
+    .stat-card {
+        padding: 16px 12px !important; width: 100% !important; min-width: 0 !important; box-sizing: border-box !important;
+        word-wrap: break-word !important; word-break: break-word !important; 
+    }
+
+    /* ДАШБОРД: ПОСЛЕДНИЕ ОПЕРАЦИИ */
+    .list-item { width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
+    .item-info { min-width: 0 !important; flex: 1 !important; }
+    .item-title, .item-url { white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; display: block !important; width: 100% !important; }
+
+    /* ==================================================================
+       ССЫЛКИ: КАРТОЧКИ И ТУЛБАР (ИДЕАЛЬНЫЙ ФИКС СЕТКИ)
+       ================================================================== */
+    .link-3d-card { padding: 20px !important; width: 100% !important; overflow: visible !important; box-sizing: border-box !important; }
+    .link-data, .card-3d-body { width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
+    .original-url-3d-wrapper { width: 100% !important; max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; padding: 12px 14px !important; margin-top: 12px !important; overflow: hidden !important; }
+    .original-url-3d { display: block !important; width: 100% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+
+    .links-toolbar { 
+        display: flex !important; flex-direction: column !important; padding: 16px 12px !important; 
+        box-sizing: border-box !important; width: 100% !important; gap: 12px !important; position: relative !important; z-index: 999 !important; 
+    }
+    .search-wrapper-3d { width: 100% !important; max-width: 100% !important; flex: none !important; box-sizing: border-box !important; }
+    
+    /* ЖЕСТКАЯ СЕТКА 50/50 ДЛЯ КНОПОК ТУЛБАРА */
+    .toolbar-actions-right { 
+        display: grid !important; 
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 10px !important; 
+        width: 100% !important; 
+        box-sizing: border-box !important;
+        align-items: start !important;
+    }
+    
+    .sort-dropdown-wrapper, #exportBtn, .btn-secondary-3d { width: 100% !important; min-width: 0 !important; margin: 0 !important; }
+    
+    .btn-filter-3d, #exportBtn, .btn-secondary-3d { 
+        width: 100% !important; height: 42px !important; min-height: 42px !important; max-height: 42px !important; 
+        padding: 0 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; 
+        gap: 6px !important; border-radius: 10px !important; box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    .btn-filter-3d svg, #exportBtn svg, .btn-secondary-3d svg, .filter-icon, .chevron { width: 16px !important; height: 16px !important; flex-shrink: 0 !important; margin: 0 !important; }
+    .btn-filter-3d span, #sortLabel, #exportBtn span, .btn-secondary-3d span { 
+        font-size: 13px !important; font-weight: 500 !important; white-space: nowrap !important; overflow: hidden !important; 
+        text-overflow: ellipsis !important; flex: 0 1 auto !important; margin: 0 !important; line-height: 1 !important; 
+    }
+
+    /* ФИКС КНОПОК В КАРТОЧКЕ */
+    .card-3d-footer { width: 100% !important; padding-top: 20px !important; display: flex !important; flex-direction: column !important; gap: 10px !important; box-sizing: border-box !important; }
+    .btn-analytics-3d { width: 100% !important; margin: 0 !important; box-sizing: border-box !important; }
+    .card-actions-right { 
+        display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 10px !important; width: 100% !important; box-sizing: border-box !important;
+    }
+    .delete-form-3d { width: 100% !important; min-width: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
+    .btn-edit-3d, .btn-delete-3d { width: 100% !important; margin: 0 !important; padding: 12px 4px !important; font-size: 13px !important; display: flex !important; justify-content: center !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; box-sizing: border-box !important; }
+
+    /* АНАЛИТИКА: ГРАФИКИ */
+    .bento-grid-enterprise, .analytics-grid { display: flex !important; flex-direction: column !important; gap: 16px !important; width: 100% !important; overflow: visible !important; }
+    .chart-full, .chart-large, .chart-standard { width: 100% !important; max-width: 100% !important; grid-column: 1 / -1 !important; margin: 0 !important; }
+    .widget.chart-full { padding: 20px 16px !important; }
+    .widget.chart-full .widget-title { font-size: 18px !important; margin-bottom: 4px !important; }
+    #comparisonChart, #engagementChart, #hourlyChart, #osChart { min-height: 200px !important; height: 200px !important; margin-top: 12px !important; width: 100% !important; }
+    .chart-container p, .widget p, .widget span, .empty-text, #sourceChart, #osChart { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; }
+
+    /* АНАЛИТИКА: МАРШРУТЫ И ГЛОБУС */
+    .isolated-focus-banner { margin-bottom: 24px !important; display: flex !important; flex-direction: column !important; }
+    .isolated-focus-routes { display: flex !important; flex-direction: column !important; gap: 12px !important; width: 100% !important; margin: 16px 0 12px 0 !important; padding: 14px 16px !important; background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 12px !important; }
+    body.light-theme .isolated-focus-routes { background: rgba(0, 0, 0, 0.02) !important; border-color: rgba(0, 0, 0, 0.05) !important; }
+    .isolated-focus-btn { width: 100% !important; margin-top: 0 !important; }
+    .route-arrow { display: none !important; }
+    
+    .route-source, .route-target { 
+        width: 100% !important; 
+        white-space: nowrap !important; 
+        overflow: hidden !important; 
+        text-overflow: ellipsis !important; 
+        display: block !important;
+        font-size: 13px !important; 
+        line-height: 20px !important;
+    }
+    .route-source { color: #ffffff !important; font-weight: 500 !important; }
+    body.light-theme .route-source { color: #1d1d1f !important; }
+    .route-target { color: #86868b !important; }
+    
+    .route-source::before, .route-target::before {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        margin-right: 10px !important;
+    }
+    .route-source::before { content: "LINK"; font-size: 9px !important; font-weight: 700 !important; text-transform: uppercase !important; background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; padding: 3px 6px !important; border-radius: 6px !important; letter-spacing: 0.5px !important; }
+    body.light-theme .route-source::before { background: rgba(0, 0, 0, 0.08) !important; color: #1d1d1f !important; }
+    .route-target::before { content: "DEST"; font-size: 9px !important; font-weight: 700 !important; text-transform: uppercase !important; background: rgba(134, 134, 139, 0.15) !important; color: #86868b !important; padding: 3px 6px !important; border-radius: 6px !important; letter-spacing: 0.5px !important; }
+    
+    .chart-full[style*="background: #0a0a0c"] > div:first-child { position: relative !important; padding: 20px 20px 12px 20px !important; z-index: 1 !important; }
+    .globe-wrapper { height: 250px !important; margin-top: 0 !important; width: 100% !important; }
+
+    /* КОНТАКТЫ */
+    .elite-card { padding: 24px 20px !important; border-radius: 20px !important; margin-bottom: 40px !important; width: 100% !important; overflow: visible !important; }
+    .elite-contact-grid { gap: 24px !important; width: 100% !important; }
+    .elite-title { font-size: 26px !important; line-height: 1.2 !important; margin-bottom: 12px !important; }
+    .elite-desc { font-size: 13px !important; line-height: 1.5 !important; margin-bottom: 24px !important; }
+    .elite-features { position: relative !important; gap: 16px !important; margin-bottom: 24px !important; }
+    .elite-features::before { left: 20px !important; transform: translateX(-50%) !important; }
+    .feature-item { gap: 12px !important; position: relative !important; z-index: 2 !important; }
+    .feature-icon { width: 40px !important; height: 40px !important; flex-shrink: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #0a0a0c !important; }
+    body.light-theme .feature-icon { background: #ffffff !important; }
+    .feature-icon svg { width: 18px !important; height: 18px !important; }
+    .feature-text strong { font-size: 14px !important; margin-bottom: 2px !important; display: block !important; }
+    .feature-text span { font-size: 12px !important; }
+    .elite-status { padding: 8px 12px !important; font-size: 11px !important; margin-bottom: 16px !important; }
+    
+    .elite-form-wrapper, .elite-form-wrapper form, .elite-input-group { width: 100% !important; }
+    .elite-form-wrapper form { display: flex !important; flex-direction: column !important; gap: 12px !important; }
+    .elite-input, textarea.elite-input { padding: 14px 16px !important; font-size: 14px !important; border-radius: 12px !important; background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; width: 100% !important; max-width: 100% !important; }
+    textarea.elite-input { min-height: 100px !important; resize: none !important; }
+    body.light-theme .elite-input, body.light-theme textarea.elite-input { background: rgba(0, 0, 0, 0.02) !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+
+    /* ==================================================================
+       ФИКС ВЫПАДАЮЩИХ СПИСКОВ ДЛЯ СМАРТФОНОВ (ABSOLUTE POSITIONING)
+       ================================================================== */
+    .sort-dropdown-wrapper, .custom-select-wrapper, #analyticsLinkSelector { position: relative !important; width: 100% !important; flex: 1 1 0 !important; }
+    
+    .sort-options-panel, .custom-options-panel, #analyticsOptionsList { 
+        width: 100% !important; max-width: 100% !important; left: 0 !important; right: auto !important; 
+    }
+    
+    .sort-dropdown-wrapper.open .sort-options-panel, 
+    .custom-select-wrapper.open .custom-options-panel, 
+    #analyticsLinkSelector.open .sort-options-panel { 
+        position: absolute !important; /* ЖЕСТКО ПОВЕРХ ВСЕГО */
+        top: calc(100% + 8px) !important; 
+        margin-top: 0 !important; 
+        transform: none !important; 
+        border: 1px solid rgba(255,255,255,0.05) !important; 
+        border-radius: 12px !important; 
+        background: rgba(20, 20, 22, 0.98) !important; 
+        z-index: 9999 !important; 
+        box-shadow: 0 16px 32px rgba(0,0,0,0.8) !important;
+    }
+    
+    body.light-theme .custom-select-wrapper.open .custom-options-panel, 
+    body.light-theme .sort-dropdown-wrapper.open .sort-options-panel, 
+    body.light-theme #analyticsLinkSelector.open .sort-options-panel { 
+        background: #ffffff !important; 
+        border-color: rgba(0,0,0,0.08) !important; 
+        box-shadow: 0 16px 32px rgba(0,0,0,0.15) !important;
+    }
+    
+    .sort-option, .custom-option { white-space: normal !important; word-break: break-word !important; padding: 12px 16px !important; }
+    
+    /* ФИКС КНОПОК ПЕРИОДОВ АНАЛИТИКИ (ДЛЯ ВСЕХ ТЕЛЕФОНОВ) */
+    .time-filters {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px !important;
+        padding-bottom: 2px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .time-filters::-webkit-scrollbar { display: none; }
+    .time-filters .filter-btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        max-width: none !important;
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+    }
+
+    /* ==================================================================
+       ФИКС МОДАЛЬНОГО ОКНА НАСТРОЕК (ПРОСТОРНАЯ СЕТКА)
+       ================================================================== */
+    .settings-item { 
+        flex-direction: column !important; 
+        align-items: flex-start !important; /* Текст слева */
+        gap: 16px !important; 
+        padding: 20px 16px !important; /* Больше пространства вокруг */
+    }
+    
+    .settings-info { width: 100% !important; }
+
+    /* Тумблер темы во всю ширину */
+    .theme-control { 
+        width: 100% !important; 
+        display: flex !important; 
+    }
+    .theme-btn { 
+        flex: 1 1 0 !important; 
+        padding: 12px !important; /* Увеличена зона клика */
+        font-size: 13px !important; 
+    }
+
+    /* Селектор языка во всю ширину */
+    #languageSelect, .custom-select-wrapper { 
+        width: 100% !important; 
+    }
+    .custom-select-trigger {
+        width: 100% !important;
+        padding: 12px 16px !important; /* Увеличена зона клика */
+    }
+    .custom-options-panel { width: 100% !important; }
+}
+
+/* ==========================================================================
+   4. УЗКИЕ СМАРТФОНЫ (max-width: 380px)
+   ========================================================================== */
+@media (max-width: 380px) {
+    .main-content { padding: 16px 12px !important; }
+    .widget, .elite-card, .create-widget, .stats-widget, .list-widget, .link-3d-card { padding: 16px 12px !important; }
+    
+    .stats-grid { gap: 8px !important; }
+    .stat-card { padding: 12px 8px !important; }
+    .stat-value { font-size: 20px !important; } 
+    .stat-title { font-size: 10px !important; white-space: normal !important; word-break: break-word !important; line-height: 1.2 !important; }
+
+    .btn-filter-3d, #exportBtn, .btn-secondary-3d { font-size: 11px !important; padding: 0 4px !important; gap: 4px !important; }
+
+    /* Настройки почищены от конфликтующих дублей, чтобы не перебивать идеальную логику из 480px */
+    .analytics-header select, .custom-select-trigger, .analytics-link-selector, .search-wrapper-3d { font-size: 13px !important; padding: 10px !important; width: 100% !important; }
+    .custom-option { font-size: 12px !important; padding: 10px !important; }
+}
+/* ==========================================================================
+   УЛЬТИМАТИВНЫЙ ФИКС ПРЫЖКА ПЕРЕКЛЮЧАТЕЛЯ ТЕМ НА МОБИЛКАХ (ANTI-JUMP)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Жестко бетонируем обертку: она больше никогда не изменит высоту */
+    .theme-control {
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
+        padding: 4px !important;
+        box-sizing: border-box !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+    
+    /* 2. Убиваем padding, который распирал кнопку, и центрируем текст флексом */
+    .theme-btn {
+        height: 100% !important;
+        padding: 0 !important; /* Убираем отступы, которые ломали геометрию при жирном шрифте */
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 1px solid transparent !important; /* Прозрачная рамка для защиты от микро-скачков */
+        box-sizing: border-box !important;
+    }
+}
+/* ==========================================================================
+   ГЛОБАЛЬНЫЙ ФИКС: ЗАЩИТА ОТ РАЗРЫВА СЕТКИ ДЛИННЫМИ ССЫЛКАМИ (FLEXBOX BLOWOUT)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Разрешаем оберткам сжиматься меньше, чем длина текста внутри них */
+    .isolated-focus-banner,
+    .isolated-focus-content,
+    .isolated-focus-routes {
+        min-width: 0 !important; /* Магическое свойство, спасающее Flexbox */
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Жестко обрезаем длинные URL-ссылки и ставим многоточие в конце */
+    .route-source, 
+    .route-target { 
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        white-space: nowrap !important; 
+        overflow: hidden !important; 
+        text-overflow: ellipsis !important; 
+        display: block !important; /* Обязательно block для работы text-overflow */
+        box-sizing: border-box !important;
+    }
+}
+/* ==========================================================================
+   УЛЬТИМАТИВНЫЙ APPLE-ДИЗАЙН ДЛЯ БЛОКА МАРШРУТОВ (СВЕТЛАЯ И ТЕМНАЯ ТЕМА)
+   ========================================================================== */
+
+/* 1. Главный контейнер (Монолитная стеклянная панель) */
+.isolated-focus-routes {
+    display: flex !important;
+    flex-direction: column !important; /* Жестко переводим в вертикальный стек */
+    gap: 0 !important; /* Убираем дыры между элементами */
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    padding: 0 !important; /* Отступы переносим внутрь строк */
+    width: 100% !important;
+    overflow: hidden !important; /* Срезаем углы по радиусу рамки */
+    margin-top: 16px !important;
+}
+
+/* Убиваем стрелку — в премиальном стеке она только создает визуальный шум */
+.route-arrow {
+    display: none !important;
+}
+
+/* 2. Общие стили для обеих строк (LINK и DEST) */
+.route-source, 
+.route-target {
+    display: block !important;
+    width: 100% !important;
+    padding: 16px 20px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important; /* Идеальная обрезка длинных ссылок */
+    font-size: 14px !important;
+    line-height: 20px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    transition: background 0.2s ease !important;
+}
+
+/* 3. Индивидуальные настройки строк и 1px разделитель */
+.route-source {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.route-target {
+    color: #86868b !important;
+    font-weight: 500 !important;
+}
+
+/* 4. Ювелирные микро-бейджи вместо старых плашек */
+.route-source::before, 
+.route-target::before {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    position: relative !important;
+    top: -1px !important; /* Оптическое выравнивание по центру текста */
+    margin-right: 14px !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    line-height: 12px !important;
+}
+
+/* Максимальный контраст для активной ссылки (LINK) */
+.route-source::before {
+    content: "LINK" !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* Изящный прозрачный контур для назначения (DEST) */
+.route-target::before {
+    content: "DEST" !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #86868b !important;
+    padding: 3px 7px !important; /* Компенсируем 1px рамки для ровности */
+}
+
+/* =========================================
+   АДАПТАЦИЯ ПОД СВЕТЛУЮ ТЕМУ (LIGHT THEME)
+   ========================================= */
+body.light-theme .isolated-focus-routes {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.light-theme .route-source {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    color: #1d1d1f !important;
+}
+
+body.light-theme .route-target {
+    color: #86868b !important;
+}
+
+/* Черный бейдж для белой темы */
+body.light-theme .route-source::before {
+    background: #1d1d1f !important;
+    color: #ffffff !important;
+}
+
+body.light-theme .route-target::before {
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    color: #86868b !important;
+}
+/* ==========================================================================
+   УЛЬТИМАТИВНЫЙ APPLE-ДИЗАЙН ДЛЯ БЛОКА МАРШРУТОВ (ГЛОБАЛЬНЫЙ ФИКС)
+   Этот блок специально в конце responsive.css, чтобы убить все старые стили
+   ========================================================================== */
+
+/* 1. Главный контейнер (Монолитная стеклянная панель) */
+.isolated-focus-routes {
+    display: flex !important;
+    flex-direction: column !important; /* Жестко переводим в вертикальный стек */
+    gap: 0 !important; /* Убираем дыры между элементами */
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    padding: 0 !important; /* Отступы переносим внутрь строк */
+    width: 100% !important;
+    overflow: hidden !important; /* Срезаем углы по радиусу рамки */
+    margin-top: 16px !important;
+}
+
+/* Убиваем стрелку — в премиальном стеке она только создает визуальный шум */
+.route-arrow {
+    display: none !important;
+}
+
+/* 2. Общие стили для обеих строк (LINK и DEST) */
+.route-source, 
+.route-target {
+    display: block !important;
+    width: 100% !important;
+    padding: 16px 20px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important; /* Идеальная обрезка длинных ссылок */
+    font-size: 14px !important;
+    line-height: 20px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* 3. Индивидуальные настройки строк (ТЕМНАЯ ТЕМА ПО УМОЛЧАНИЮ) */
+.route-source {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.route-target {
+    color: #86868b !important;
+    font-weight: 500 !important;
+}
+
+/* 4. Ювелирные микро-бейджи (ТЕМНАЯ ТЕМА) */
+.route-source::before, 
+.route-target::before {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    position: relative !important;
+    top: -1px !important; /* Оптическое выравнивание по центру текста */
+    margin-right: 14px !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    line-height: 12px !important;
+    text-transform: uppercase !important;
+}
+
+.route-source::before {
+    content: "LINK" !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+.route-target::before {
+    content: "DEST" !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #86868b !important;
+    padding: 3px 7px !important; /* Компенсируем 1px рамки для ровности */
+}
+
+/* =========================================
+   АДАПТАЦИЯ ПОД СВЕТЛУЮ ТЕМУ (LIGHT THEME)
+   ========================================= */
+body.light-theme .isolated-focus-routes {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.light-theme .route-source {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    color: #1d1d1f !important;
+}
+
+body.light-theme .route-target {
+    color: #86868b !important;
+}
+
+/* Жестко перебиваем старые мобильные бейджи для белой темы */
+body.light-theme .route-source::before {
+    background: #1d1d1f !important;
+    color: #ffffff !important;
+}
+
+body.light-theme .route-target::before {
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    color: #86868b !important;
+}
+/* ==========================================================================
+   GOD-MODE APPLE СТЕК ДЛЯ МАРШРУТОВ (ПРИНУДИТЕЛЬНЫЙ ФИКС СВЕТЛОЙ ТЕМЫ)
+   ========================================================================== */
+
+/* 1. Главный контейнер (Жестко заставляем быть колонкой и в светлой, и в темной) */
+.isolated-focus-routes,
+body.light-theme .isolated-focus-routes {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    margin-top: 16px !important;
+    align-items: stretch !important;
+}
+
+/* Фоны контейнера */
+.isolated-focus-routes {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.light-theme .isolated-focus-routes {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Скрываем мусорную стрелку везде */
+.route-arrow,
+body.light-theme .route-arrow {
+    display: none !important;
+}
+
+/* 2. Обнуляем старые капсулы и делаем ровные строки */
+.route-source, 
+.route-target,
+body.light-theme .route-source, 
+body.light-theme .route-target {
+    display: block !important;
+    width: 100% !important;
+    padding: 16px 20px !important; /* Единый широкий отступ */
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    border: none !important;
+    border-radius: 0 !important; /* УБИВАЕМ СТАРЫЕ ЗАКРУГЛЕНИЯ КАПСУЛЫ */
+    background: transparent !important; /* УБИВАЕМ СТАРЫЙ СЕРЫЙ ФОН */
+}
+
+/* 3. Разделительные линии и цвета текста */
+.route-source {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+.route-target {
+    color: #86868b !important;
+    font-weight: 500 !important;
+}
+
+body.light-theme .route-source {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    color: #1d1d1f !important;
+    font-weight: 600 !important;
+}
+body.light-theme .route-target {
+    color: #86868b !important;
+    font-weight: 500 !important;
+}
+
+/* 4. Ювелирные микро-бейджи (Жесткий сброс старых огромных плашек) */
+.route-source::before, 
+.route-target::before,
+body.light-theme .route-source::before, 
+body.light-theme .route-target::before {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    position: relative !important;
+    top: -1px !important;
+    margin-right: 14px !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    line-height: 12px !important;
+    text-transform: uppercase !important;
+}
+
+/* Цвета бейджей для Темной темы */
+.route-source::before {
+    content: "LINK" !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+}
+.route-target::before {
+    content: "DEST" !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #86868b !important;
+    padding: 3px 7px !important;
+}
+
+/* Цвета бейджей для Светлой темы (Исправляем то, что было на скрине) */
+body.light-theme .route-source::before {
+    content: "LINK" !important;
+    background: #1d1d1f !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+body.light-theme .route-target::before {
+    content: "DEST" !important;
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    color: #86868b !important;
+    padding: 3px 7px !important;
+}
