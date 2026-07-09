@@ -610,15 +610,10 @@ document.addEventListener('DOMContentLoaded', () => {
    Handles interactive data manipulation for individual links, including
    clipboard duplication, record editing, and configuration extraction.
    ========================================================================== */
-/* ==========================================================================
-   LINK MANAGEMENT LOGIC
-   Handles interactive data manipulation for individual links, including
-   clipboard duplication, record editing, and configuration extraction.
-   ========================================================================== */
+
+// 1. Премиальное уведомление копирования
 window.copyToClipboard = function(text) {
     navigator.clipboard.writeText(text).then(() => { 
-        
-        // Удаляем предыдущее уведомление, если пользователь кликает несколько раз подряд
         const existingToast = document.getElementById('onyx-copy-toast');
         if (existingToast) existingToast.remove();
 
@@ -626,7 +621,6 @@ window.copyToClipboard = function(text) {
         const toast = document.createElement('div');
         toast.id = 'onyx-copy-toast';
 
-        // Премиальные стили (Glassmorphism + Apple UI)
         toast.style.position = 'fixed';
         toast.style.bottom = '40px';
         toast.style.left = '50%';
@@ -649,114 +643,71 @@ window.copyToClipboard = function(text) {
         toast.style.gap = '10px';
         toast.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
 
-        // Иконка успешного действия (Зеленая галочка)
         const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#32d74b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-
-        // Формируем контент без вывода самой ссылки
         const message = window.t('copied_success', 'Ссылка скопирована в буфер обмена.');
         toast.innerHTML = `${icon} <span>${message}</span>`;
 
         document.body.appendChild(toast);
-
-        // Принудительный рефлоу для запуска CSS-анимации
         void toast.offsetWidth;
 
-        // Анимация появления
         toast.style.transform = 'translate(-50%, 0)';
         toast.style.opacity = '1';
 
-        // Анимация исчезновения и удаление из DOM через 2.5 секунды
         setTimeout(() => {
             toast.style.transform = 'translate(-50%, 20px)';
             toast.style.opacity = '0';
             setTimeout(() => {
                 if (toast.parentNode) toast.parentNode.removeChild(toast);
-            }, 400); // Ожидание завершения transition
+            }, 400);
         }, 2500);
-        
     });
 };
 
-/* ==========================================================================
-   LINK FILTERING AND SORTING
-   In-memory array operations to rapidly restructure active link nodes without
-   issuing redundant server requests.
-   ========================================================================== */
+// 2. Открытие и закрытие окна настроек (Configure)
+window.openEditModal = function(id, title, url) {
+    const editModal = document.getElementById('editModal');
+    if (editModal) {
+        document.getElementById('editLinkId').value = id;
+        document.getElementById('editTitle').value = title;
+        document.getElementById('editOriginalUrl').value = url;
+        editModal.classList.add('active');
+    }
+};
+
+window.closeEditModal = function() {
+    const editModal = document.getElementById('editModal');
+    if (editModal) editModal.classList.remove('active');
+};
+
+// 3. Логика формы настроек и кнопки экспорта
 document.addEventListener('DOMContentLoaded', () => {
-    const grid = document.getElementById('linksGridContainer');
-    if (!grid) return;
-
-    const searchInput = document.getElementById('linkSearch');
-    const sortWrapper = document.getElementById('sortDropdown');
-    const cards = Array.from(grid.querySelectorAll('.link-3d-card')).filter(card => !card.classList.contains('empty-state-card'));
-    
-    if (cards.length === 0) return;
-
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const title = card.getAttribute('data-title') || '';
-                const url = card.getAttribute('data-url') || '';
-                card.style.display = (title.includes(term) || url.includes(term)) ? 'flex' : 'none';
-            });
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => { 
+            window.location.href = '/api/export'; 
         });
     }
 
-    if (sortWrapper) {
-        const trigger = sortWrapper.querySelector('.sort-trigger');
-        const label = sortWrapper.querySelector('#sortLabel');
-        const options = sortWrapper.querySelectorAll('.sort-option');
-
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sortWrapper.classList.toggle('open');
+    const editForm = document.querySelector('#editModal form');
+    if (editForm) {
+        const urlInput = document.getElementById('editOriginalUrl');
+        
+        editForm.addEventListener('submit', (e) => {
+            const urlValue = urlInput.value.trim();
+            if (!urlValue) {
+                e.preventDefault(); 
+                urlInput.classList.add('input-error');
+                shakeElement(urlInput);
+                return;
+            } else {
+                if (!urlValue.startsWith('http://') && !urlValue.startsWith('https://')) {
+                    urlInput.value = 'https://' + urlValue;
+                }
+            }
         });
 
-        options.forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                options.forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                label.textContent = opt.textContent;
-                sortWrapper.classList.remove('open');
-
-                const sortType = opt.getAttribute('data-sort');
-                
-                const sortedCards = cards.sort((a, b) => {
-                    const idA = parseInt(a.getAttribute('data-id')) || 0;
-                    const idB = parseInt(b.getAttribute('data-id')) || 0;
-                    const clicksA = parseInt(a.getAttribute('data-clicks')) || 0;
-                    const clicksB = parseInt(b.getAttribute('data-clicks')) || 0;
-                    const titleA = a.getAttribute('data-title');
-                    const titleB = b.getAttribute('data-title');
-
-                    switch (sortType) {
-                        case 'date-desc': return idB - idA; 
-                        case 'date-asc': return idA - idB;  
-                        case 'clicks-desc': return clicksB - clicksA; 
-                        case 'clicks-asc': return clicksA - clicksB; 
-                        case 'alpha-asc': return titleA.localeCompare(titleB); 
-                        case 'alpha-desc': return titleB.localeCompare(titleA); 
-                        default: return 0;
-                    }
-                });
-
-                grid.innerHTML = '';
-                sortedCards.forEach((card, index) => {
-                    grid.appendChild(card);
-                    if (typeof anime !== 'undefined') {
-                        anime({ 
-                            targets: card, 
-                            opacity: [0, 1], 
-                            translateY: [15, 0], 
-                            duration: 400, 
-                            delay: index * 30, 
-                            easing: 'easeOutQuint' 
-                        });
-                    }
-                });
-            });
+        urlInput.addEventListener('input', function() {
+            this.classList.remove('input-error');
         });
     }
 });
